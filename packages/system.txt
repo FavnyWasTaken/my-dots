@@ -1,0 +1,58 @@
+# System packages required for the Caelestia desktop (Hyprland + Quickshell)
+# One package per line. Lines starting with # are comments.
+# Installed with paru, so both official repos and AUR packages are fine.
+
+# --- Session and compositor ---
+hyprland
+uwsm
+sddm
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+polkit-gnome
+qt6-wayland
+xdg-user-dirs
+
+# --- Audio ---
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+libpipewire
+
+# --- Network, Bluetooth, power ---
+networkmanager
+bluez
+bluez-utils
+power-profiles-daemon
+
+# --- Build tools (the shell is compiled from source) ---
+git
+cmake
+ninja
+base-devel
+
+# --- Quickshell and Qt ---
+quickshell
+qt6-base
+qt6-declarative
+qt6-imageformats
+qt6-m3shapes-git
+
+# --- Caelestia shell dependencies ---
+fish
+swappy
+ddcutil
+brightnessctl
+libcava
+lm_sensors
+aubio
+libqalculate
+
+# --- Caelestia CLI (pulls in python, grim, slurp, fuzzel, dart-sass, etc.) ---
+caelestia-cli
+
+# --- Fonts ---
+ttf-material-symbols-variable
+ttf-rubik-vf
+ttf-cascadia-code-nerd
+ttf-monocraft-nerd
