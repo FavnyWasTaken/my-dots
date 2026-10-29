@@ -1,0 +1,24 @@
+[[plugin.deps]]
+use = "XYenon/clipboard"
+rev = "b25ec96"
+hash = "9f07d7de37a430833ef33b92c0bcf8cb"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:mount"
+rev = "58c4f4e"
+hash = "b95f898e6dc60b52edbc415952e14395"
+
+[[plugin.deps]]
+use = "boydaihungst/gvfs"
+rev = "c92953c"
+hash = "d1e8d33ed36d339d5588f036dc3a9204"
+
+[[flavor.deps]]
+use = "yazi-rs/flavors:dracula"
+rev = "20b47bf"
+hash = "40136c9a02e166067a36d9ad618887f2"
+
+[[flavor.deps]]
+use = "marcosvnmelo/kanagawa-dragon"
+rev = "b433f4a"
+hash = "b967c24a30350b1c5cd3a2ad5a7732e7"

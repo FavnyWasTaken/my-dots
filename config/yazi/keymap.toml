@@ -1,0 +1,39 @@
+[[mgr.prepend_keymap]]
+on = "<C-c>"
+run = [ "yank", 'plugin sysclip -- --action=copy' ]
+
+[[mgr.prepend_keymap]]
+on = "<C-v>"
+run = [ 'plugin sysclip -- --action=paste' ]
+
+[[mgr.prepend_keymap]]
+on = "<C-f>"
+run = [ "cd /", "search --via=fd --args=-H" ]
+
+[[mgr.prepend_keymap]]
+on = "S"
+run = "search rg"
+desc = "Search inside file contents"
+
+[[mgr.prepend_keymap]]
+on = "<Delete>"
+run = "remove"
+
+[[mgr.prepend_keymap]]
+on = "<S-Delete>"
+run = "remove --permanently"
+
+[[mgr.prepend_keymap]]
+on = "M"
+run = "plugin mount"
+desc = "Mount devices"
+
+[[mgr.prepend_keymap]]
+on = "<C-g>"
+run = "plugin gvfs -- select-then-mount --jump"
+desc = "Mount MTP/phone/network"
+
+[[mgr.prepend_keymap]]
+on = "<C-u>"
+run = "plugin gvfs -- select-then-unmount"
+desc = "Unmount MTP/phone/network"
