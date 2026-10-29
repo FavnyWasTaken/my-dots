@@ -1,0 +1,12 @@
+[Unit]
+Description=Animated Wallpaper (mpvpaper)
+After=graphical-session.target quickshell-caelestia.service
+
+[Service]
+ExecStartPre=/usr/bin/sleep 1
+ExecStart=/usr/bin/mpvpaper -o "loop no-audio" "*" %h/Pictures/Wallpapers/live.mp4
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target

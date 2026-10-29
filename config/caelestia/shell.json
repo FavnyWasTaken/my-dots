@@ -1,0 +1,176 @@
+{
+    "appearance": {
+        "transparency": {
+            "enabled": true
+        }
+    },
+    "background": {
+        "desktopClock": {
+            "enabled": true,
+            "position": "top-left"
+        },
+        "visualiser": {
+            "autoHide": false,
+            "enabled": true
+        },
+        "wallpaperEnabled": false
+    },
+    "bar": {
+        "activeWindow": {
+            "compact": true,
+            "inverted": true
+        },
+        "clock": {
+            "background": true,
+            "showDate": false
+        },
+        "persistent": true,
+        "scrollActions": {
+            "volume": true
+        },
+        "showOnHover": true,
+        "statusIcons": [
+            {
+                "enabled": true,
+                "id": "lockStatus"
+            },
+            {
+                "enabled": true,
+                "id": "audio"
+            },
+            {
+                "enabled": true,
+                "id": "microphone"
+            },
+            {
+                "enabled": true,
+                "id": "kbLayout"
+            },
+            {
+                "enabled": true,
+                "id": "network"
+            },
+            {
+                "enabled": false,
+                "id": "bluetooth"
+            },
+            {
+                "enabled": false,
+                "id": "battery"
+            }
+        ],
+        "tray": {
+            "background": true
+        },
+        "workspaces": {
+            "maxWindowIcons": 10,
+            "showWindows": true
+        }
+    },
+    "dashboard": {
+        "performance": {
+            "showBattery": false
+        },
+        "showWeather": true
+    },
+    "general": {
+        "apps": {
+            "explorer": [
+                "yazi"
+            ],
+            "terminal": [
+                "kitty"
+            ]
+        },
+        "logo": "/home/favny/Pictures/Configimage/logo.svg"
+    },
+    "launcher": {
+        "hiddenApps": [
+            "avahi-discover",
+            "bvnc",
+            "bssh",
+            "btrfs-assistant",
+            "cachyos-hello",
+            "org.cachyos.KernelManager",
+            "cachyos-pi",
+            "lstopo",
+            "limine-snapper-restore",
+            "org.gnome.Meld",
+            "mpv",
+            "nvidia-settings",
+            "com.saivert.pwvucontrol",
+            "qv4l2",
+            "qvidcap",
+            "org.cachyos.scx-manager",
+            "com.shellyorg.shelly",
+            "org.torproject.torbrowser-launcher.settings",
+            "uuctl",
+            "org.pulseaudio.pavucontrol",
+            "cmake-gui",
+            "io.github.bluemancz.hyprmod",
+            "btop",
+            "thunar-bulk-rename",
+            "xfce4-about",
+            "thunar-settings",
+            "thunar",
+            "lsp-plugins",
+            "org.rncbc.qtractor",
+            "kitty",
+            "yazi",
+            "nwg-look",
+            "equibop",
+            "org.kde.isoimagewriter"
+        ],
+        "maxShown": 15,
+        "maxWallpapers": 20,
+        "useFuzzy": {
+            "apps": false
+        },
+        "vimKeybinds": false
+    },
+    "nexus": {
+        "networkRescanInterval": 100000
+    },
+    "services": {
+        "clockFormat": "TwelveHour",
+        "dataUnits": "Binary",
+        "defaultPlayer": "Music Player Daemon",
+        "maxVolume": 0.8,
+        "smartScheme": true,
+        "useFahrenheit": false,
+        "useTwelveHourClock": true,
+        "weatherUnits": "Celsius"
+    },
+    "utilities": {
+        "quickToggles": [
+            {
+                "enabled": true,
+                "id": "wifi"
+            },
+            {
+                "enabled": true,
+                "id": "bluetooth"
+            },
+            {
+                "enabled": true,
+                "id": "mic"
+            },
+            {
+                "enabled": true,
+                "id": "settings"
+            },
+            {
+                "enabled": true,
+                "id": "gameMode"
+            },
+            {
+                "enabled": true,
+                "id": "dnd"
+            },
+            {
+                "enabled": false,
+                "id": "vpn"
+            }
+        ]
+    }
+}

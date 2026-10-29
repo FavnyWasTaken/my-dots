@@ -1,0 +1,5 @@
+*, div, span, button, input, textarea {
+    font-family: "Monocraft", monospace !important;
+    -webkit-font-smoothing: none !important;
+    font-smooth: never !important;
+}
