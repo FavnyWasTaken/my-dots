@@ -1,0 +1,53 @@
+# Personal applications (official repos and AUR, installed with paru)
+# One package per line. Lines starting with # are comments.
+
+# --- Browsers ---
+librewolf
+torbrowser-launcher
+
+# --- Terminal and shell tools ---
+kitty
+fish
+starship
+fzf
+neovim
+7zip
+zip
+unzip
+
+# --- Audio ---
+mpd
+mpc
+ncmpcpp
+mpdris2
+easyeffects
+lsp-plugins
+calf
+pavucontrol
+cava
+linux-soundboard
+
+# --- Media backends ---
+gst-plugins-base
+gst-plugins-good
+gst-plugins-bad
+gst-plugins-ugly
+
+# --- Desktop tweaks ---
+mpvpaper
+nwg-look
+hyprmod
+
+# --- Games ---
+prismlauncher
+an-anime-game-launcher-bin
+
+# --- Terminal toys ---
+cmatrix
+asciiquarium
+cbonsai
+lavat
+pokeget
+weathr
+pipes.sh
+tty-clock
