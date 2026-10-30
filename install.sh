@@ -7,7 +7,7 @@
 #   MUSIC_SRC=/path/to/Music ./install.sh music
 #   MUSIC_URL=https://... ./install.sh music
 #
-# Default steps: packages shell configs services cleanup
+# Default steps: packages shell configs services sddm cleanup
 # Optional step: music (never runs unless requested)
 
 set -euo pipefail
@@ -20,7 +20,22 @@ CONFIG_DIR="$HOME/.config"
 BACKUP_DIR="$HOME/.dots-backup/$(date +%Y%m%d-%H%M%S)"
 OLD_HOME="/home/favny"   # home path used inside the repo files
 WALLPAPER_URL="https://github.com/FavnyWasTaken/my-dots/releases/download/assets-v1/live.mp4"
-DEFAULT_STEPS=(packages shell configs services cleanup)
+DEFAULT_STEPS=(packages shell configs services sddm cleanup)
+
+install_sddm() {
+  log "Installing SDDM theme"
+  local dest=/usr/share/sddm/themes/pixel-cyberpunk
+  sudo mkdir -p /usr/share/sddm/themes
+  sudo rm -rf "$dest"
+  sudo cp -a "$DOTS_DIR/sddm/pixel-cyberpunk" "$dest"
+  if [[ -f "$HOME/Pictures/Wallpapers/live.mp4" ]]; then
+    sudo cp "$HOME/Pictures/Wallpapers/live.mp4" "$dest/bg.mp4"
+  else
+    warn "live.mp4 not found: the SDDM theme will have no background video"
+  fi
+  sudo mkdir -p /etc/sddm.conf.d
+  sudo cp "$DOTS_DIR/sddm/99-theme.conf" /etc/sddm.conf.d/99-theme.conf
+}
 
 remove_unneeded() {
   log "Removing unneeded packages"
@@ -191,6 +206,7 @@ main() {
       shell)    install_shell ;;
       configs)  install_configs ;;
       services) install_services ;;
+      sddm)     install_sddm ;;
       music)    install_music ;;
       cleanup)  remove_unneeded ;;
       *) die "Unknown step: $step (available: ${DEFAULT_STEPS[*]} music)" ;;
