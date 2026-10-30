@@ -23,6 +23,7 @@ mpc
 ncmpcpp
 mpdris2
 easyeffects
+lsp-plugins
 calf
 pavucontrol
 cava
