@@ -7,7 +7,7 @@
 #   MUSIC_SRC=/path/to/Music ./install.sh music
 #   MUSIC_URL=https://... ./install.sh music
 #
-# Default steps: packages shell configs services sddm cleanup
+# Default steps: packages shell configs services sddm cleanup soundboard
 # Optional step: music (never runs unless requested)
 
 set -euo pipefail
@@ -20,7 +20,17 @@ CONFIG_DIR="$HOME/.config"
 BACKUP_DIR="$HOME/.dots-backup/$(date +%Y%m%d-%H%M%S)"
 OLD_HOME="/home/favny"   # home path used inside the repo files
 WALLPAPER_URL="https://github.com/FavnyWasTaken/my-dots/releases/download/assets-v1/live.mp4"
-DEFAULT_STEPS=(packages shell configs services sddm cleanup)
+SOUNDBOARD_THEME_URL="https://raw.githubusercontent.com/FavnyWasTaken/Soundboard-mono/main/soundboard-mono.sh"
+DEFAULT_STEPS=(packages shell configs services sddm cleanup soundboard)
+
+install_soundboard() {
+  log "Applying the Soundboard-mono theme"
+  if ! pacman -Qq linux-soundboard &>/dev/null; then
+    warn "linux-soundboard is not installed: skipping the theme (install it, then run ./install.sh soundboard)"
+    return 0
+  fi
+  curl -fsSL "$SOUNDBOARD_THEME_URL" | bash || warn "Soundboard-mono theme failed; run ./install.sh soundboard to retry"
+}
 
 install_sddm() {
   log "Installing SDDM theme"
@@ -209,6 +219,7 @@ main() {
       sddm)     install_sddm ;;
       music)    install_music ;;
       cleanup)  remove_unneeded ;;
+      soundboard) install_soundboard ;;
       *) die "Unknown step: $step (available: ${DEFAULT_STEPS[*]} music)" ;;
     esac
   done
