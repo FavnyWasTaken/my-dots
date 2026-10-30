@@ -1,9 +1,10 @@
 # Personal applications (official repos and AUR, installed with paru)
 # One package per line. Lines starting with # are comments.
 
-# --- Browsers ---
+# --- Browsers and chat ---
 librewolf
 torbrowser-launcher
+equibop-bin
 
 # --- Terminal and shell tools ---
 kitty
@@ -11,6 +12,7 @@ fish
 starship
 fzf
 neovim
+yazi
 7zip
 zip
 unzip

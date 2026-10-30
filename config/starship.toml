@@ -1,0 +1,28 @@
+format = """
+[░▒▓](fg:#121212)\
+[  ](bg:#121212 fg:#c8c8c8)\
+[](fg:#121212 bg:#3a3a3a)\
+$directory\
+[](fg:#3a3a3a bg:#c8c8c8)\
+$time\
+[](fg:#c8c8c8)\
+$line_break\
+$character"""
+ 
+[directory]
+style = "bold fg:#c8c8c8 bg:#3a3a3a"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncate_to_repo = true
+ 
+[time]
+disabled = false
+time_format = "%H:%M"
+style = "bold fg:#121212 bg:#c8c8c8"
+format = "[  $time ]($style)"
+ 
+[character]
+success_symbol = "[➢](bold #c8c8c8)"
+error_symbol = "[➢](bold #ffffff)"
+ 
+
