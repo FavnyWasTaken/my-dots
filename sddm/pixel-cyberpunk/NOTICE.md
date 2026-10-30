@@ -1,0 +1,1 @@
+Based on the pixel-cyberpunk theme from https://github.com/Darkkal44/qylock (see the license there). Modified: Main.qml, metadata.desktop, theme.conf, font (Monocraft). bg.mp4 is not stored here; install.sh copies ~/Pictures/Wallpapers/live.mp4 into the theme folder.
