@@ -19,6 +19,7 @@ SHELL_DIR="$HOME/.config/quickshell/caelestia"
 CONFIG_DIR="$HOME/.config"
 BACKUP_DIR="$HOME/.dots-backup/$(date +%Y%m%d-%H%M%S)"
 OLD_HOME="/home/favny"   # home path used inside the repo files
+WALLPAPER_URL="https://github.com/FavnyWasTaken/my-dots/releases/download/assets-v1/live.mp4"
 DEFAULT_STEPS=(packages shell configs services)
 
 log()  { printf '\n\033[1;34m==> %s\033[0m\n' "$*"; }
@@ -102,6 +103,17 @@ install_configs() {
   log "Installing pictures"
   mkdir -p "$HOME/Pictures"
   cp -a "$DOTS_DIR/Pictures/." "$HOME/Pictures/"
+
+  # The animated wallpaper is too big for git, so it is a release asset
+  if [[ ! -f "$HOME/Pictures/Wallpapers/live.mp4" ]]; then
+    log "Downloading live.mp4"
+    if curl -fL "$WALLPAPER_URL" -o "$HOME/Pictures/Wallpapers/live.mp4.part"; then
+      mv "$HOME/Pictures/Wallpapers/live.mp4.part" "$HOME/Pictures/Wallpapers/live.mp4"
+    else
+      rm -f "$HOME/Pictures/Wallpapers/live.mp4.part"
+      warn "Could not download live.mp4; the animated wallpaper will be skipped"
+    fi
+  fi
   mkdir -p "$HOME/Music" "$HOME/Videos/Replays"
 }
 
