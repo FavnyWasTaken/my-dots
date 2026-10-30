@@ -1,0 +1,10 @@
+# Never commit large or copyrighted media
+Music/
+*.mp3
+*.flac
+*.m4a
+*.m4b
+*.ogg
+*.wav
+*.mp4
+*.mkv
