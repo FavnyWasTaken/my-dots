@@ -50,7 +50,7 @@ install_sddm() {
 remove_unneeded() {
   log "Removing unneeded packages"
   local pkg found=()
-  for pkg in vim micro nano alacritty firefox; do
+  for pkg in vim micro nano meld alacritty firefox; do
     pacman -Qq "$pkg" &>/dev/null && found+=("$pkg")
   done
   if [[ ${#found[@]} -eq 0 ]]; then
