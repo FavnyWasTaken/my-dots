@@ -27,7 +27,7 @@ install_limine() {
   log "Customizing Limine bootloader"
   local conf=/boot/limine.conf
   local src="$DOTS_DIR/limine"
-  if [[ ! -f "$conf" ]]; then
+  if ! sudo test -f "$conf"; then
     warn "$conf not found (Limine is not used here?): skipping"
     return 0
   fi
