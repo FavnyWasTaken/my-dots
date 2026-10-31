@@ -7,7 +7,7 @@
 #   MUSIC_SRC=/path/to/Music ./install.sh music
 #   MUSIC_URL=https://... ./install.sh music
 #
-# Default steps: packages shell configs services sddm cleanup soundboard
+# Default steps: packages shell configs services sddm limine cleanup soundboard
 # Optional step: music (never runs unless requested)
 
 set -euo pipefail
@@ -21,7 +21,45 @@ BACKUP_DIR="$HOME/.dots-backup/$(date +%Y%m%d-%H%M%S)"
 OLD_HOME="/home/favny"   # home path used inside the repo files
 WALLPAPER_URL="https://github.com/FavnyWasTaken/my-dots/releases/download/assets-v1/live.mp4"
 SOUNDBOARD_THEME_URL="https://raw.githubusercontent.com/FavnyWasTaken/Soundboard-mono/main/soundboard-mono.sh"
-DEFAULT_STEPS=(packages shell configs services sddm cleanup soundboard)
+DEFAULT_STEPS=(packages shell configs services sddm limine cleanup soundboard)
+
+install_limine() {
+  log "Customizing Limine bootloader"
+  local conf=/boot/limine.conf
+  local src="$DOTS_DIR/limine"
+  if [[ ! -f "$conf" ]]; then
+    warn "$conf not found (Limine is not used here?): skipping"
+    return 0
+  fi
+  [[ -f "$src/header.conf" && -f "$src/limine-splash.png" && -f "$src/monocraft.bin" ]] \
+    || die "limine/ files are missing in the repo; run git pull"
+
+  local keys="remember_last_entry|term_font|term_font_size|term_font_scale|term_palette|term_palette_bright|term_foreground|term_foreground_bright|term_margin|interface_branding|wallpaper"
+  local tmp backup before after
+  tmp="$(mktemp)"
+  backup="$conf.bak-$(date +%Y%m%d-%H%M%S)"
+
+  sudo cp -a "$conf" "$backup"
+  echo "Backup of limine.conf: $backup"
+
+  # New config = my header + the old file without the old customization keys
+  { cat "$src/header.conf"; sudo grep -vE "^($keys):" "$conf" || true; } > "$tmp"
+
+  before="$(sudo grep -c "^/" "$conf" || true)"
+  after="$(grep -c "^/" "$tmp" || true)"
+  if [[ "$before" != "$after" ]]; then
+    rm -f "$tmp"
+    die "Boot entry count changed ($before -> $after); limine.conf was not modified"
+  fi
+
+  sudo install -m 644 "$src/limine-splash.png" /boot/limine-splash.png
+  sudo install -m 644 "$src/monocraft.bin" /boot/monocraft.bin
+
+  sudo diff -u "$conf" "$tmp" || true
+  sudo install -m 644 "$tmp" "$conf"
+  rm -f "$tmp"
+  echo "Limine customized ($after boot entries kept)."
+}
 
 install_soundboard() {
   log "Applying the Soundboard-mono theme"
@@ -217,6 +255,7 @@ main() {
       configs)  install_configs ;;
       services) install_services ;;
       sddm)     install_sddm ;;
+      limine)   install_limine ;;
       music)    install_music ;;
       cleanup)  remove_unneeded ;;
       soundboard) install_soundboard ;;
