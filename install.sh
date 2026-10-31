@@ -202,7 +202,7 @@ install_configs() {
       warn "Could not download live.mp4; the animated wallpaper will be skipped"
     fi
   fi
-  mkdir -p "$HOME/Music" "$HOME/Videos/Replays"
+  mkdir -p "$HOME/Music" "$HOME/Videos/Replays" "$HOME/.config/mpd/playlists" "$HOME/.local/share/mpd"
 }
 
 install_services() {
