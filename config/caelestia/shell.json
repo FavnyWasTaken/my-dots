@@ -115,6 +115,7 @@
             "yazi",
             "nwg-look",
             "nvim",
+            "lsp-plugins",
             "org.kde.isoimagewriter"
         ],
         "maxShown": 15,
