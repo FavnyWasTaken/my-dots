@@ -47,7 +47,7 @@ mpc clear
 mpc update
 mpd add /
 ```
-After this open ncmpcpp (SUPER + M) and on TAB keybinds switch on u album and listing u favorite music.
+After this open ncmpcpp (SUPER + M) and on TAB keybinds switch on u album and listing u favorite music (Or not favorite, I know something?)
 
 # Credits
 caelestia-dots/shell - the shell this is all about
