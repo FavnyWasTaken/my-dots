@@ -12,13 +12,9 @@ Package lists for the whole thing
 
 # Installation
 
-Make a normal user, log in to a graphical session (CachyOS with Hyprland is the easiest way), open a terminal and use this commands:
+Make a normal user, log in to a graphical session (CachyOS with Hyprland is the easiest way), open a terminal and use this command:
 
-sudo pacman -S --needed git hyprland paru
-git clone https://github.com/FavnyWasTaken/my-dots.git
-cd ~/my-dots/
-chmod +x install.sh
-./install.sh
+sudo pacman -S --needed git && git clone https://github.com/FavnyWasTaken/my-dots.git ~/my-dots && cd ~/my-dots && chmod +x install.sh && ./install.sh
 
 After end of script use reboot and enjoy the new system.
 
