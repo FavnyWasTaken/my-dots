@@ -23,9 +23,11 @@ After end of script use reboot and enjoy the new system.
 The system itself weighs ±14.1 GB when fully installed, the installation takes about 10-15 minutes if you have an internet speed of at least 80Mbpss and if you have a drive read speed of least 2000 MB/sec.
 
 # Some embarrassments
-U can see that every minute after the start of the session, the RAM usage begins to increase, this is not a virus or a miner, this is the fault of the constant local screen recording that runs through GPUs screens recorder, if you need to disable this function go to ~/.config/hypr/hyprland/execs.lua go to line 38-41
+1. ### U can see that every minute after the start of the session, the RAM usage begins to increase, this is not a virus or a miner, this is the fault of the constant local screen recording that runs through GPUs screens recorder, if you need to disable this function go to ~/.config/hypr/hyprland/execs.lua go to line 38-41
 ```
 - Replay buffer hl.exec_cmd( "gpu-screen-recorder -w screen -s 2560x1440 -f 60 -a default_output -c mp4 -r 1800 -restart-replay-on-save yes -bm cbr -q 20000 -o /home/favny/Videos/Replays")
 ```
 and either delete these lines or comment them out. And re-enter the session. If u want to stay this function, replay videos saves on SUPER + F1 to ~/Video/Replays/U_NEW_REPLAY.mp4
+
+
 
