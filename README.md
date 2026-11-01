@@ -11,7 +11,7 @@ Animated wallpaper service (mpvpaper)
 Package lists for the whole thing
 ## The basic theme itself is monochrome with slight shades of dark green.
 
-# Installation
+# Installation:
 
 Make a normal user, log in to a graphical session (CachyOS with Hyprland is the easiest way), open a terminal and use this command:
 ```
@@ -23,7 +23,7 @@ After end of script use reboot and enjoy the new system.
 
 The system itself weighs ±14.1 GB when fully installed, the installation takes about 10-15 minutes if you have an internet speed of at least 80Mbpss and if you have a drive read speed of least 2000 MB/sec.
 
-# Some embarrassments
+# Some embarrassments:
 ## 1. 
 U can see that every minute after the start of the session, the RAM usage begins to increase, this is not a virus or a miner, this is the fault of the constant local screen recording that runs through GPUs screens recorder, if you need to disable this function go to ~/.config/hypr/hyprland/execs.lua go to line 38-41
 ```
@@ -34,5 +34,14 @@ and either delete these lines or comment them out. And re-enter the session. If 
 ## 2.
 
 Some people may have a problem with changing the theme of the Celestia shell, this happens on weak SSDs/HDDs, it may be pink to fix it use: ``` systemctl --user restart quickshell-caelestia.service ``` And try it again. 
+
+# Music
+My music (several GB) is not in the repo. Too big for git, and its not mine to publish anyway. The script only sets up mpd, mpDris2 and ncmpcpp so they work out of the box. After you copy your music to ~/Music, use this commands:
+```
+mpc clear
+mpc update
+mpd add /
+```
+After this open ncmpcpp (SUPER + M) and on TAB keybinds switch on u album and listing u favorite music.
 
 
