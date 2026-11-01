@@ -36,6 +36,10 @@ set_dark_theme() {
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark || warn "Could not set color-scheme"
   gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark || warn "Could not set gtk-theme"
   gsettings set org.gnome.desktop.interface icon-theme Papirus-Dark || warn "Could not set icon-theme"
+
+  if [[ -f "$DOTS_DIR/dconf/interface.ini" ]] && command -v dconf >/dev/null; then
+    dconf load /org/gnome/desktop/interface/ < "$DOTS_DIR/dconf/interface.ini" || warn "Could not load dconf settings"
+  fi
 }
 
 install_limine() {
@@ -206,6 +210,11 @@ install_configs() {
   log "Installing pictures"
   mkdir -p "$HOME/Pictures"
   cp -a "$DOTS_DIR/Pictures/." "$HOME/Pictures/"
+
+  # GTK2 settings written by nwg-look
+  if [[ -f "$DOTS_DIR/home/.gtkrc-2.0" ]]; then
+    sed "s|$OLD_HOME|$HOME|g" "$DOTS_DIR/home/.gtkrc-2.0" > "$HOME/.gtkrc-2.0"
+  fi
 
   # Profile picture (shown in the shell dashboard)
   if [[ -f "$DOTS_DIR/home/.face" ]]; then
