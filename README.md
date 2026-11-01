@@ -9,5 +9,30 @@ Custom SDDM theme (pixel-cyberpunk)
 Custom Limine bootloader look (font, palette, splash)
 Animated wallpaper service (mpvpaper)
 Package lists for the whole thing
+
+# Installation
+
+Make a normal user, log in to a graphical session (CachyOS with Hyprland is the easiest way), open a terminal and use this commands:
+
+sudo pacman -S --needed git hyprland paru
+git clone https://github.com/FavnyWasTaken/my-dots.git
+cd ~/my-dots/
+chmod +x install.sh
+./install.sh
+
+After end of script use reboot and enjoy the new system.
+
+# Some information About This Dots
+
+The system itself weighs ±14.1 GB when fully installed, the installation takes about 10-15 minutes if you have an internet speed of at least 80Mbpss and if you have a drive read speed of abembarrassments
+
+# Some embarrassments
+
+
+
+
+
+
+
    
 
