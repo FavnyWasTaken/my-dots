@@ -49,5 +49,11 @@ mpd add /
 ```
 After this open ncmpcpp (SUPER + M) and on TAB keybinds switch on u album and listing u favorite music.
 
+# Credits
+caelestia-dots/shell - the shell this is all about
+Darkkal44/qylock - base of the SDDM theme (GPL, check the license in their repo)
+Monocraft font
+everyone whose packages I use in the lists
+
 
 
