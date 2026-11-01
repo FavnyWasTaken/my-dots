@@ -7,7 +7,7 @@
 #   MUSIC_SRC=/path/to/Music ./install.sh music
 #   MUSIC_URL=https://... ./install.sh music
 #
-# Default steps: packages shell configs services sddm limine cleanup soundboard
+# Default steps: packages shell configs services theme sddm limine cleanup soundboard
 # Optional step: music (never runs unless requested)
 
 set -euo pipefail
@@ -21,7 +21,22 @@ BACKUP_DIR="$HOME/.dots-backup/$(date +%Y%m%d-%H%M%S)"
 OLD_HOME="/home/favny"   # home path used inside the repo files
 WALLPAPER_URL="https://github.com/FavnyWasTaken/my-dots/releases/download/assets-v1/live.mp4"
 SOUNDBOARD_THEME_URL="https://raw.githubusercontent.com/FavnyWasTaken/Soundboard-mono/main/soundboard-mono.sh"
-DEFAULT_STEPS=(packages shell configs services sddm limine cleanup soundboard)
+DEFAULT_STEPS=(packages shell configs services theme sddm limine cleanup soundboard)
+
+set_dark_theme() {
+  log "Setting dark theme defaults"
+  if ! command -v gsettings >/dev/null; then
+    warn "gsettings not found: skipping the theme step"
+    return 0
+  fi
+  if [[ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]]; then
+    warn "No desktop session found: log in and run ./install.sh theme"
+    return 0
+  fi
+  gsettings set org.gnome.desktop.interface color-scheme prefer-dark || warn "Could not set color-scheme"
+  gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark || warn "Could not set gtk-theme"
+  gsettings set org.gnome.desktop.interface icon-theme Papirus-Dark || warn "Could not set icon-theme"
+}
 
 install_limine() {
   log "Customizing Limine bootloader"
@@ -254,6 +269,7 @@ main() {
       shell)    install_shell ;;
       configs)  install_configs ;;
       services) install_services ;;
+      theme)    set_dark_theme ;;
       sddm)     install_sddm ;;
       limine)   install_limine ;;
       music)    install_music ;;

@@ -9,6 +9,7 @@ sddm
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
 polkit-gnome
+adw-gtk-theme
 gvfs
 qt6-wayland
 xdg-user-dirs
