@@ -39,7 +39,6 @@ gst-plugins-ugly
 # --- Desktop tweaks ---
 mpvpaper
 nwg-look
-papirus-folders
 papirus-icon-theme
 darkly-bin
 qtengine
