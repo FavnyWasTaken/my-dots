@@ -1,14 +1,7 @@
 #!/usr/bin/env bash
-# Installer for my Caelestia setup (Arch Linux / CachyOS).
-#
-# Usage:
-#   ./install.sh                 run the default steps
-#   ./install.sh configs         run only the listed steps
-#   MUSIC_SRC=/path/to/Music ./install.sh music
-#   MUSIC_URL=https://... ./install.sh music
-#
-# Default steps: packages shell configs services theme sddm limine cleanup soundboard
-# Optional step: music (never runs unless requested)
+# usage: ./install.sh [step ...]
+# default steps: packages shell configs services theme sddm limine cleanup soundboard
+# optional step: music (MUSIC_SRC=/path/to/Music or MUSIC_URL=https://...)
 
 set -euo pipefail
 
@@ -18,149 +11,53 @@ SHELL_BRANCH="custom"
 SHELL_DIR="$HOME/.config/quickshell/caelestia"
 CONFIG_DIR="$HOME/.config"
 BACKUP_DIR="$HOME/.dots-backup/$(date +%Y%m%d-%H%M%S)"
-OLD_HOME="/home/favny"   # home path used inside the repo files
+OLD_HOME="/home/favny"
+LIVE_WALLPAPER="$HOME/Pictures/Wallpapers/live.mp4"
 WALLPAPER_URL="https://github.com/FavnyWasTaken/my-dots/releases/download/assets-v1/live.mp4"
 SOUNDBOARD_THEME_URL="https://raw.githubusercontent.com/FavnyWasTaken/Soundboard-mono/main/soundboard-mono.sh"
 DEFAULT_STEPS=(packages shell configs services theme sddm limine cleanup soundboard)
 
-set_dark_theme() {
-  log "Setting dark theme defaults"
-  if ! command -v gsettings >/dev/null; then
-    warn "gsettings not found: skipping the theme step"
-    return 0
-  fi
-  if [[ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]]; then
-    warn "No desktop session found: log in and run ./install.sh theme"
-    return 0
-  fi
-  gsettings set org.gnome.desktop.interface color-scheme prefer-dark || warn "Could not set color-scheme"
-  gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark || warn "Could not set gtk-theme"
-  gsettings set org.gnome.desktop.interface icon-theme Papirus-Dark || warn "Could not set icon-theme"
+log()  { echo "==> $*"; }
+warn() { echo "warning: $*" >&2; }
+die()  { echo "error: $*" >&2; exit 1; }
 
-  if [[ -f "$DOTS_DIR/dconf/interface.ini" ]] && command -v dconf >/dev/null; then
-    dconf load /org/gnome/desktop/interface/ < "$DOTS_DIR/dconf/interface.ini" || warn "Could not load dconf settings"
-  fi
+# backup <path> [name inside the backup dir]
+backup() {
+  [[ -e "$1" ]] || return 0
+  mkdir -p "$BACKUP_DIR"
+  cp -a "$1" "$BACKUP_DIR/${2:-$(basename "$1")}"
 }
-
-install_limine() {
-  log "Customizing Limine bootloader"
-  local conf=/boot/limine.conf
-  local src="$DOTS_DIR/limine"
-  if ! sudo test -f "$conf"; then
-    warn "$conf not found (Limine is not used here?): skipping"
-    return 0
-  fi
-  [[ -f "$src/header.conf" && -f "$src/limine-splash.png" && -f "$src/monocraft.bin" ]] \
-    || die "limine/ files are missing in the repo; run git pull"
-
-  local keys="remember_last_entry|term_font|term_font_size|term_font_scale|term_palette|term_palette_bright|term_foreground|term_foreground_bright|term_margin|interface_branding|wallpaper"
-  local tmp backup before after
-  tmp="$(mktemp)"
-  backup="$conf.bak-$(date +%Y%m%d-%H%M%S)"
-
-  sudo cp -a "$conf" "$backup"
-  echo "Backup of limine.conf: $backup"
-
-  # New config = my header + the old file without the old customization keys
-  { cat "$src/header.conf"; sudo grep -vE "^($keys):" "$conf" || true; } > "$tmp"
-
-  before="$(sudo grep -c "^/" "$conf" || true)"
-  after="$(grep -c "^/" "$tmp" || true)"
-  if [[ "$before" != "$after" ]]; then
-    rm -f "$tmp"
-    die "Boot entry count changed ($before -> $after); limine.conf was not modified"
-  fi
-
-  sudo install -m 644 "$src/limine-splash.png" /boot/limine-splash.png
-  sudo install -m 644 "$src/monocraft.bin" /boot/monocraft.bin
-
-  sudo diff -u "$conf" "$tmp" || true
-  sudo install -m 644 "$tmp" "$conf"
-  rm -f "$tmp"
-  echo "Limine customized ($after boot entries kept)."
-}
-
-install_soundboard() {
-  log "Applying the Soundboard-mono theme"
-  if ! pacman -Qq linux-soundboard &>/dev/null; then
-    warn "linux-soundboard is not installed: skipping the theme (install it, then run ./install.sh soundboard)"
-    return 0
-  fi
-  curl -fsSL "$SOUNDBOARD_THEME_URL" | bash || warn "Soundboard-mono theme failed; run ./install.sh soundboard to retry"
-}
-
-install_sddm() {
-  log "Installing SDDM theme"
-  local dest=/usr/share/sddm/themes/pixel-cyberpunk
-  sudo mkdir -p /usr/share/sddm/themes
-  sudo rm -rf "$dest"
-  sudo cp -a "$DOTS_DIR/sddm/pixel-cyberpunk" "$dest"
-  if [[ -f "$HOME/Pictures/Wallpapers/live.mp4" ]]; then
-    sudo cp "$HOME/Pictures/Wallpapers/live.mp4" "$dest/bg.mp4"
-  else
-    warn "live.mp4 not found: the SDDM theme will have no background video"
-  fi
-  sudo mkdir -p /etc/sddm.conf.d
-  sudo cp "$DOTS_DIR/sddm/99-theme.conf" /etc/sddm.conf.d/99-theme.conf
-}
-
-remove_unneeded() {
-  log "Removing unneeded packages"
-  local pkg found=()
-  for pkg in vim micro nano meld alacritty firefox; do
-    pacman -Qq "$pkg" &>/dev/null && found+=("$pkg")
-  done
-  if [[ ${#found[@]} -eq 0 ]]; then
-    echo "Nothing to remove."
-    return 0
-  fi
-  sudo pacman -Rnsdd "${found[@]}" || warn "Could not remove: ${found[*]}"
-}
-
-log()  { printf '\n\033[1;34m==> %s\033[0m\n' "$*"; }
-warn() { printf '\033[1;33mwarning: %s\033[0m\n' "$*" >&2; }
-die()  { printf '\033[1;31merror: %s\033[0m\n' "$*" >&2; exit 1; }
 
 preflight() {
-  [[ $EUID -ne 0 ]] || die "Do not run this script as root."
-  command -v pacman >/dev/null || die "pacman not found: only Arch-based systems are supported."
-  command -v sudo >/dev/null || die "sudo is required."
-  curl -fsI https://archlinux.org >/dev/null || die "No internet connection."
+  [[ $EUID -ne 0 ]] || die "don't run this as root"
+  command -v pacman >/dev/null || die "only Arch-based systems are supported"
+  command -v sudo >/dev/null || die "sudo is required"
+  curl -fsI https://archlinux.org >/dev/null || die "no internet connection"
 }
-
-ensure_paru() {
-  command -v paru >/dev/null && return 0
-  log "Installing paru"
-  sudo pacman -S --needed --noconfirm git base-devel
-  local tmp
-  tmp="$(mktemp -d)"
-  git clone https://aur.archlinux.org/paru-bin.git "$tmp/paru-bin"
-  (cd "$tmp/paru-bin" && makepkg -si --noconfirm)
-  rm -rf "$tmp"
-}
-
-read_list() { grep -vE '^\s*(#|$)' "$1"; }
 
 install_packages() {
-  ensure_paru
-  log "Updating system"
+  if ! command -v paru >/dev/null; then
+    sudo pacman -S --needed --noconfirm git base-devel
+    local tmp
+    tmp="$(mktemp -d)"
+    git clone https://aur.archlinux.org/paru-bin.git "$tmp/paru-bin"
+    (cd "$tmp/paru-bin" && makepkg -si --noconfirm)
+    rm -rf "$tmp"
+  fi
   sudo pacman -Syu
   local list pkgs
   for list in system apps; do
-    log "Installing $list packages"
-    mapfile -t pkgs < <(read_list "$DOTS_DIR/packages/$list.txt")
+    mapfile -t pkgs < <(grep -vE '^\s*(#|$)' "$DOTS_DIR/packages/$list.txt")
     paru -S --needed --skipreview "${pkgs[@]}"
   done
 }
 
 install_shell() {
-  log "Getting the Caelestia shell fork"
   mkdir -p "$(dirname "$SHELL_DIR")"
   if [[ -d "$SHELL_DIR/.git" ]]; then
     git -C "$SHELL_DIR" fetch origin
     git -C "$SHELL_DIR" checkout "$SHELL_BRANCH"
-    git -C "$SHELL_DIR" pull --ff-only origin "$SHELL_BRANCH" \
-      || warn "Could not fast-forward, keeping the local state"
+    git -C "$SHELL_DIR" pull --ff-only origin "$SHELL_BRANCH" || warn "could not fast-forward, keeping the local state"
   else
     if [[ -e "$SHELL_DIR" ]]; then
       mkdir -p "$BACKUP_DIR"
@@ -168,118 +65,142 @@ install_shell() {
     fi
     git clone --branch "$SHELL_BRANCH" "$SHELL_REPO" "$SHELL_DIR"
   fi
-  log "Building the shell"
   cmake -B "$SHELL_DIR/build" -S "$SHELL_DIR" -G Ninja -DCMAKE_BUILD_TYPE=Release
   cmake --build "$SHELL_DIR/build"
 }
 
 install_configs() {
-  log "Installing configs"
   local stage item name
   stage="$(mktemp -d)"
   cp -a "$DOTS_DIR/config/." "$stage/"
-
-  # Replace the original author's home path with the current user's home
-  grep -rlI --null -- "$OLD_HOME" "$stage" \
-    | xargs -0 -r sed -i "s|$OLD_HOME|$HOME|g" || true
-
+  grep -rlI --null -- "$OLD_HOME" "$stage" | xargs -0 -r sed -i "s|$OLD_HOME|$HOME|g" || true
   for item in "$stage"/*; do
-    [[ -d "$item" ]] || continue
     name="$(basename "$item")"
-    if [[ -e "$CONFIG_DIR/$name" ]]; then
-      mkdir -p "$BACKUP_DIR"
-      cp -a "$CONFIG_DIR/$name" "$BACKUP_DIR/"
+    backup "$CONFIG_DIR/$name"
+    if [[ -d "$item" ]]; then
+      mkdir -p "$CONFIG_DIR/$name"
+      cp -a "$item/." "$CONFIG_DIR/$name/"
+    else
+      cp -a "$item" "$CONFIG_DIR/$name"
     fi
-    mkdir -p "$CONFIG_DIR/$name"
-    cp -a "$item/." "$CONFIG_DIR/$name/"
   done
   rm -rf "$stage"
 
-  # Top-level files from config/ (for example starship.toml)
-  local f
-  for f in "$DOTS_DIR"/config/*; do
-    [[ -f "$f" ]] || continue
-    name="$(basename "$f")"
-    if [[ -e "$CONFIG_DIR/$name" ]]; then
-      mkdir -p "$BACKUP_DIR"
-      cp -a "$CONFIG_DIR/$name" "$BACKUP_DIR/"
-    fi
-    sed "s|$OLD_HOME|$HOME|g" "$f" > "$CONFIG_DIR/$name"
-  done
-
-  log "Installing pictures"
   mkdir -p "$HOME/Pictures"
   cp -a "$DOTS_DIR/Pictures/." "$HOME/Pictures/"
+  [[ -f "$DOTS_DIR/home/.gtkrc-2.0" ]] && sed "s|$OLD_HOME|$HOME|g" "$DOTS_DIR/home/.gtkrc-2.0" > "$HOME/.gtkrc-2.0"
+  [[ -f "$DOTS_DIR/home/.face" ]] && cp -a "$DOTS_DIR/home/.face" "$HOME/.face"
 
-  # GTK2 settings written by nwg-look
-  if [[ -f "$DOTS_DIR/home/.gtkrc-2.0" ]]; then
-    sed "s|$OLD_HOME|$HOME|g" "$DOTS_DIR/home/.gtkrc-2.0" > "$HOME/.gtkrc-2.0"
-  fi
-
-  # Profile picture (shown in the shell dashboard)
-  if [[ -f "$DOTS_DIR/home/.face" ]]; then
-    cp -a "$DOTS_DIR/home/.face" "$HOME/.face"
-  fi
-
-  # The animated wallpaper is too big for git, so it is a release asset
-  if [[ ! -f "$HOME/Pictures/Wallpapers/live.mp4" ]]; then
-    log "Downloading live.mp4"
-    if curl -fL "$WALLPAPER_URL" -o "$HOME/Pictures/Wallpapers/live.mp4.part"; then
-      mv "$HOME/Pictures/Wallpapers/live.mp4.part" "$HOME/Pictures/Wallpapers/live.mp4"
+  # too big for git, it's a release asset
+  if [[ ! -f "$LIVE_WALLPAPER" ]]; then
+    if curl -fL "$WALLPAPER_URL" -o "$LIVE_WALLPAPER.part"; then
+      mv "$LIVE_WALLPAPER.part" "$LIVE_WALLPAPER"
     else
-      rm -f "$HOME/Pictures/Wallpapers/live.mp4.part"
-      warn "Could not download live.mp4; the animated wallpaper will be skipped"
+      rm -f "$LIVE_WALLPAPER.part"
+      warn "could not download live.mp4, the animated wallpaper will be skipped"
     fi
   fi
-  mkdir -p "$HOME/Music" "$HOME/Videos/Replays" "$HOME/.config/mpd/playlists" "$HOME/.local/share/mpd"
 
-  log "Installing icons and cursors"
-  if [[ -d "$DOTS_DIR/icons" ]]; then
-    if [[ -d "$HOME/.icons" ]]; then
-      mkdir -p "$BACKUP_DIR"
-      cp -a "$HOME/.icons" "$BACKUP_DIR/icons"
-    fi
-    mkdir -p "$HOME/.icons"
-    cp -a "$DOTS_DIR/icons/." "$HOME/.icons/"
-  fi
+  mkdir -p "$HOME/Music" "$HOME/Videos/Replays" "$CONFIG_DIR/mpd/playlists" "$HOME/.local/share/mpd"
+
+  backup "$HOME/.icons" icons
+  mkdir -p "$HOME/.icons"
+  cp -a "$DOTS_DIR/icons/." "$HOME/.icons/"
 }
 
 install_services() {
-  log "Installing user services"
   mkdir -p "$CONFIG_DIR/systemd/user"
   cp -a "$DOTS_DIR"/systemd/*.service "$CONFIG_DIR/systemd/user/"
-  systemctl --user daemon-reload \
-    || warn "systemctl --user is unavailable here; enable the services after the first login"
+  systemctl --user daemon-reload || warn "systemctl --user is unavailable, enable the services after the first login"
 
   local unit
   for unit in quickshell-caelestia.service mpd.service linux-soundboard-engine.target; do
-    systemctl --user enable "$unit" || warn "Could not enable $unit"
+    systemctl --user enable "$unit" || warn "could not enable $unit"
   done
 
-  if [[ -f "$HOME/Pictures/Wallpapers/live.mp4" ]]; then
-    systemctl --user enable wallpaper.service || warn "Could not enable wallpaper.service"
+  if [[ -f "$LIVE_WALLPAPER" ]]; then
+    systemctl --user enable wallpaper.service || warn "could not enable wallpaper.service"
   else
-    warn "live.mp4 not found in ~/Pictures/Wallpapers: wallpaper.service was not enabled"
+    warn "live.mp4 not found, wallpaper.service was not enabled"
   fi
 
-  if ! systemctl is-enabled display-manager.service &>/dev/null; then
-    sudo systemctl enable sddm.service || warn "Could not enable sddm"
+  systemctl is-enabled display-manager.service &>/dev/null || sudo systemctl enable sddm.service || warn "could not enable sddm"
+}
+
+set_dark_theme() {
+  command -v gsettings >/dev/null || { warn "gsettings not found, skipping the theme"; return 0; }
+  [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] || { warn "no desktop session, log in and run ./install.sh theme"; return 0; }
+  gsettings set org.gnome.desktop.interface color-scheme prefer-dark || warn "could not set color-scheme"
+  gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark || warn "could not set gtk-theme"
+  gsettings set org.gnome.desktop.interface icon-theme Papirus-Dark || warn "could not set icon-theme"
+  command -v dconf >/dev/null && dconf load /org/gnome/desktop/interface/ < "$DOTS_DIR/dconf/interface.ini" || warn "could not load the dconf settings"
+}
+
+install_sddm() {
+  local dest=/usr/share/sddm/themes/pixel-cyberpunk
+  [[ -d "$DOTS_DIR/sddm/pixel-cyberpunk" ]] || die "sddm/pixel-cyberpunk is missing in the repo, run git pull"
+  sudo mkdir -p /usr/share/sddm/themes /etc/sddm.conf.d
+  sudo rm -rf "$dest"
+  sudo cp -a "$DOTS_DIR/sddm/pixel-cyberpunk" "$dest"
+  if [[ -f "$LIVE_WALLPAPER" ]]; then
+    sudo cp "$LIVE_WALLPAPER" "$dest/bg.mp4"
+  else
+    warn "live.mp4 not found, the sddm theme will have no background video"
   fi
+  sudo cp "$DOTS_DIR/sddm/99-theme.conf" /etc/sddm.conf.d/99-theme.conf
+}
+
+install_limine() {
+  local conf=/boot/limine.conf src="$DOTS_DIR/limine"
+  if ! sudo test -f "$conf"; then
+    warn "$conf not found, skipping limine"
+    return 0
+  fi
+  [[ -f "$src/header.conf" && -f "$src/limine-splash.png" && -f "$src/monocraft.bin" ]] || die "limine/ files are missing in the repo, run git pull"
+
+  local keys="remember_last_entry|term_font|term_font_size|term_font_scale|term_palette|term_palette_bright|term_foreground|term_foreground_bright|term_margin|interface_branding|wallpaper"
+  local tmp bak before after
+  tmp="$(mktemp)"
+  bak="$conf.bak-$(date +%Y%m%d-%H%M%S)"
+  sudo cp -a "$conf" "$bak"
+  echo "limine.conf backup: $bak"
+
+  # my header on top, then the old file without the old customization keys
+  { cat "$src/header.conf"; sudo grep -vE "^($keys):" "$conf" || true; } > "$tmp"
+
+  before="$(sudo grep -c '^/' "$conf" || true)"
+  after="$(grep -c '^/' "$tmp" || true)"
+  if [[ "$before" != "$after" ]]; then
+    rm -f "$tmp"
+    die "boot entry count changed ($before -> $after), limine.conf was not modified"
+  fi
+
+  sudo install -m 644 "$src/limine-splash.png" /boot/limine-splash.png
+  sudo install -m 644 "$src/monocraft.bin" /boot/monocraft.bin
+  sudo diff -u "$conf" "$tmp" || true
+  sudo install -m 644 "$tmp" "$conf"
+  rm -f "$tmp"
+}
+
+remove_unneeded() {
+  local pkg found=()
+  for pkg in vim micro nano meld alacritty firefox; do
+    pacman -Qq "$pkg" &>/dev/null && found+=("$pkg")
+  done
+  [[ ${#found[@]} -gt 0 ]] || return 0
+  sudo pacman -Rnsdd "${found[@]}" || warn "could not remove: ${found[*]}"
+}
+
+install_soundboard() {
+  if ! pacman -Qq linux-soundboard &>/dev/null; then
+    warn "linux-soundboard is not installed, skipping the theme (install it and run ./install.sh soundboard)"
+    return 0
+  fi
+  curl -fsSL "$SOUNDBOARD_THEME_URL" | bash || warn "soundboard theme failed, run ./install.sh soundboard to retry"
 }
 
 install_music() {
-  log "Music"
   mkdir -p "$HOME/Music"
-
-  log "Installing icons and cursors"
-  if [[ -d "$DOTS_DIR/icons" ]]; then
-    if [[ -d "$HOME/.icons" ]]; then
-      mkdir -p "$BACKUP_DIR"
-      cp -a "$HOME/.icons" "$BACKUP_DIR/icons"
-    fi
-    mkdir -p "$HOME/.icons"
-    cp -a "$DOTS_DIR/icons/." "$HOME/.icons/"
-  fi
   if [[ -n "${MUSIC_SRC:-}" && -d "$MUSIC_SRC" ]]; then
     rsync -a --info=progress2 "$MUSIC_SRC"/ "$HOME/Music"/
   elif [[ -n "${MUSIC_URL:-}" ]]; then
@@ -289,7 +210,7 @@ install_music() {
     tar -xf "$archive" -C "$HOME/Music"
     rm -f "$archive"
   else
-    die "Set MUSIC_SRC=/path/to/Music or MUSIC_URL=https://... for this step."
+    die "set MUSIC_SRC=/path/to/Music or MUSIC_URL=https://... for this step"
   fi
 }
 
@@ -298,24 +219,23 @@ main() {
   local steps=("$@") step
   [[ ${#steps[@]} -gt 0 ]] || steps=("${DEFAULT_STEPS[@]}")
   for step in "${steps[@]}"; do
+    log "$step"
     case "$step" in
-      packages) install_packages ;;
-      shell)    install_shell ;;
-      configs)  install_configs ;;
-      services) install_services ;;
-      theme)    set_dark_theme ;;
-      sddm)     install_sddm ;;
-      limine)   install_limine ;;
-      music)    install_music ;;
-      cleanup)  remove_unneeded ;;
+      packages)   install_packages ;;
+      shell)      install_shell ;;
+      configs)    install_configs ;;
+      services)   install_services ;;
+      theme)      set_dark_theme ;;
+      sddm)       install_sddm ;;
+      limine)     install_limine ;;
+      cleanup)    remove_unneeded ;;
       soundboard) install_soundboard ;;
-      *) die "Unknown step: $step (available: ${DEFAULT_STEPS[*]} music)" ;;
+      music)      install_music ;;
+      *) die "unknown step: $step" ;;
     esac
   done
-  log "Done. Log out and back in (or reboot) to start the desktop."
-  if [[ -d "$BACKUP_DIR" ]]; then
-    echo "Backups of replaced files: $BACKUP_DIR"
-  fi
+  log "done, log out and back in (or reboot) to start the desktop"
+  [[ ! -d "$BACKUP_DIR" ]] || echo "backups: $BACKUP_DIR"
 }
 
 main "$@"
