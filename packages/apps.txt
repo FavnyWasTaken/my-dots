@@ -22,6 +22,7 @@ mpd
 mpc
 ncmpcpp
 mpdris2
+python-mutagen
 easyeffects
 lsp-plugins
 calf
