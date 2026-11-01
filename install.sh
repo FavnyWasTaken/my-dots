@@ -207,6 +207,11 @@ install_configs() {
   mkdir -p "$HOME/Pictures"
   cp -a "$DOTS_DIR/Pictures/." "$HOME/Pictures/"
 
+  # Profile picture (shown in the shell dashboard)
+  if [[ -f "$DOTS_DIR/home/.face" ]]; then
+    cp -a "$DOTS_DIR/home/.face" "$HOME/.face"
+  fi
+
   # The animated wallpaper is too big for git, so it is a release asset
   if [[ ! -f "$HOME/Pictures/Wallpapers/live.mp4" ]]; then
     log "Downloading live.mp4"
