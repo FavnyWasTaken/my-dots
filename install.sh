@@ -218,6 +218,16 @@ install_configs() {
     fi
   fi
   mkdir -p "$HOME/Music" "$HOME/Videos/Replays" "$HOME/.config/mpd/playlists" "$HOME/.local/share/mpd"
+
+  log "Installing icons and cursors"
+  if [[ -d "$DOTS_DIR/icons" ]]; then
+    if [[ -d "$HOME/.icons" ]]; then
+      mkdir -p "$BACKUP_DIR"
+      cp -a "$HOME/.icons" "$BACKUP_DIR/icons"
+    fi
+    mkdir -p "$HOME/.icons"
+    cp -a "$DOTS_DIR/icons/." "$HOME/.icons/"
+  fi
 }
 
 install_services() {
@@ -246,6 +256,16 @@ install_services() {
 install_music() {
   log "Music"
   mkdir -p "$HOME/Music"
+
+  log "Installing icons and cursors"
+  if [[ -d "$DOTS_DIR/icons" ]]; then
+    if [[ -d "$HOME/.icons" ]]; then
+      mkdir -p "$BACKUP_DIR"
+      cp -a "$HOME/.icons" "$BACKUP_DIR/icons"
+    fi
+    mkdir -p "$HOME/.icons"
+    cp -a "$DOTS_DIR/icons/." "$HOME/.icons/"
+  fi
   if [[ -n "${MUSIC_SRC:-}" && -d "$MUSIC_SRC" ]]; then
     rsync -a --info=progress2 "$MUSIC_SRC"/ "$HOME/Music"/
   elif [[ -n "${MUSIC_URL:-}" ]]; then
