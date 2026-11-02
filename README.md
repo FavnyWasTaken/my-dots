@@ -21,7 +21,7 @@ After end of script use reboot and enjoy the new system.
 
 # Some information About This Dots
 
-The system itself weighs ±14.1 GB when fully installed, the installation takes about 10-15 minutes if you have an internet speed of at least 80Mbpss and if you have a drive read speed of least 2000 MB/sec.
+The system itself weighs ±14.1 GB when fully installed, the installation takes about 10-15 minutes if you have an internet speed of at least 80Mbpss and if you have a drive read speed of least 2000 MB/sec. Basic usage RAM wo/ gpu-screen-recorder is 2.3 - 2.9 GB.
 
 # Troubleshooting:
 
