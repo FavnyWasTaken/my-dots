@@ -51,6 +51,10 @@ mpd add /
 ```
 After this open ncmpcpp (SUPER + M) and on TAB keybinds switch on u album and listing u favorite music (Or not favorite, I know something?)
 
+# Support
+
+These dotfiles are not supported on any distributions other than Arch - Based, OS such as Windows 10/11 Other distributions Ubuntu, Gentoo, NixOS and others are not supported. These Dotfiles are best suited for CachyOS and Arch Linux, other even Arch-based distributions may have some problems. If you find a critical vulnerability, problem, or anything else, write it here in Issues. If you have a problem that can be solved in a couple of minutes or with the help of AI, then please solve it yourself.
+
 # Credits
 caelestia-dots/shell - the shell this is all about
 
@@ -59,9 +63,6 @@ Darkkal44/qylock - base of the SDDM theme (GPL, check the license in their repo)
 Monocraft font
 
 everyone whose packages I use in the lists
-
-
-
 
 ## License
 
