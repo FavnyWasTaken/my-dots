@@ -1,3 +1,4 @@
+<img width="2558" height="1437" alt="Unknown" src="https://github.com/user-attachments/assets/8ea4963d-0113-4df6-af03-79830582f1cc" />
 # Introduction:
 Sup everyone, this is my personal setup for Arch / CachyOS + Hyprland + Caelestia shell, wrapped into one script. Fresh install, a couple of commands, and the whole desktop (shell, apps, configs, themes, bootloader look) ends up the way I like it. No more "ok what was I even using" after every reinstall.
 
