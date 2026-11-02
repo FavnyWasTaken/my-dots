@@ -60,3 +60,7 @@ everyone whose packages I use in the lists
 
 
 
+
+## License
+
+MIT for my own stuff (see `LICENSE`). The SDDM theme in `sddm/pixel-cyberpunk` keeps its upstream GPL license. Third-party fonts, images and videos belong to their authors.
